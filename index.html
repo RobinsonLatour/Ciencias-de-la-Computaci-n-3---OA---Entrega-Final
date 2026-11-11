@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico R-07 | Laboratorio de Robótica</title>
+<meta name="description" content="Objeto de Aprendizaje gamificado sobre las partes de un robot: sensores, actuadores y controlador.">
+<link rel="icon" type="image/jpeg" href="imagenes/icono-sensor.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" defer></script>
+</head>
+<body>
+
+<header id="cabecera">
+  <p id="logo">Laboratorio de Robótica</p>
+  <p id="chip-agente">AGENTE: <strong id="hud-nombre">sin identificar</strong></p>
+  <p id="puntaje">PUNTOS: 0</p>
+  <p id="estado-progreso">DIAGNÓSTICO: 0/9</p>
+  <div id="barra-progreso">
+    <div id="barra-progreso-relleno"></div>
+  </div>
+  <nav id="menu-juego">
+    <button type="button" class="boton-mini" id="boton-mapa">Mapa</button>
+    <button type="button" class="boton-mini" id="boton-tema">Tema claro</button>
+    <button type="button" class="boton-mini boton-reiniciar" id="boton-reiniciar">Reiniciar</button>
+  </nav>
+</header>
+
+<main>
+
+  <section class="pantalla" id="pantalla-inicio">
+    <p class="etiqueta">MISIÓN · MÓDULO 1</p>
+    <h1>Diagnóstico del robot R-07</h1>
+    <p>El robot R-07 dejó de responder en medio de una prueba. Tu misión, como técnico/a de campo, es revisar sus tres sistemas, percepción, decisión y acción, para encontrar qué falló.</p>
+
+    <pre>Conectando con R-07...
+[AVISO] El robot no reacciona a estímulos. Diagnóstico requerido.
+Cargando expediente técnico de sus tres sistemas...
+Listo, agente. Empezá por identificarte.</pre>
+
+    <p><strong>Objetivo:</strong> al terminar esta misión, vas a poder identificar sensores, actuadores y el controlador de un robot, y explicar cómo se relacionan entre sí para resolver una falla.</p>
+    <p><strong>Público:</strong> estudiantes del Laboratorio de Robótica. Nivel inicial, sin conocimientos previos de electrónica ni de programación.</p>
+
+    <ol id="diagrama-flujo">
+      <li class="paso-diagrama">
+        <img src="imagenes/icono-sensor.jpg" alt="Ícono de sensor" width="100">
+        <h3>Sensor</h3>
+      </li>
+      <li class="paso-diagrama">
+        <img src="imagenes/icono-controlador.jpg" alt="Ícono de controlador" width="100">
+        <h3>Controlador</h3>
+      </li>
+      <li class="paso-diagrama">
+        <img src="imagenes/icono-actuador.jpg" alt="Ícono de actuador" width="100">
+        <h3>Actuador</h3>
+      </li>
+    </ol>
+
+    <article class="tarjeta" id="registro-agente">
+      <h2>Identificación del agente</h2>
+      <form id="formulario-agente" novalidate>
+        <fieldset>
+          <legend>Datos del agente</legend>
+          <p><label for="nombre-agente">Nombre y apellido</label></p>
+          <input type="text" id="nombre-agente" name="nombre-agente" maxlength="40" autocomplete="off" placeholder="Ej: Ana Rodríguez">
+        </fieldset>
+        <button type="submit" id="boton-comenzar">Iniciar diagnóstico</button>
+      </form>
+      <p class="resultado" id="mensaje-nombre" aria-live="polite"></p>
+    </article>
+  </section>
+
+  <section class="pantalla" id="pantalla-mapa" hidden>
+    <p class="etiqueta">01, MAPA DEL LABORATORIO</p>
+    <h2>Mapa de los sistemas de R-07</h2>
+    <p id="mensaje-mapa">Elegí una zona para empezar el diagnóstico. Cada zona se desbloquea al terminar la anterior.</p>
+    <p id="texto-progreso">Diagnóstico completado: 0%</p>
+    <div id="grid-zonas">
+      <article class="zona" id="tarjeta-sensores" data-zona="sensores">
+        <p class="z-num">ZONA 01</p>
+        <h3>Sistema de percepción</h3>
+        <p class="z-tema">Sensores: lo que el robot siente</p>
+        <p class="z-estado" id="estado-zona-sensores"></p>
+        <button type="button" class="boton-entrar" data-zona="sensores">Entrar a la zona</button>
+      </article>
+      <article class="zona" id="tarjeta-actuadores" data-zona="actuadores">
+        <p class="z-num">ZONA 02</p>
+        <h3>Sistema de acción</h3>
+        <p class="z-tema">Actuadores: lo que el robot hace</p>
+        <p class="z-estado" id="estado-zona-actuadores"></p>
+        <button type="button" class="boton-entrar" data-zona="actuadores">Entrar a la zona</button>
+      </article>
+      <article class="zona" id="tarjeta-controlador" data-zona="controlador">
+        <p class="z-num">ZONA 03</p>
+        <h3>Sistema de decisión</h3>
+        <p class="z-tema">Controlador: el cerebro del robot</p>
+        <p class="z-estado" id="estado-zona-controlador"></p>
+        <button type="button" class="boton-entrar" data-zona="controlador">Entrar a la zona</button>
+      </article>
+      <article class="zona" id="tarjeta-desafio" data-zona="desafio">
+        <p class="z-num">ZONA 04</p>
+        <h3>Núcleo de R-07</h3>
+        <p class="z-tema">Desafío final: los tres sistemas juntos</p>
+        <p class="z-estado" id="estado-zona-desafio"></p>
+        <button type="button" class="boton-entrar" data-zona="desafio">Entrar a la zona</button>
+      </article>
+    </div>
+    <p id="bloque-informe" hidden>
+      <button type="button" id="boton-ver-informe">Ver informe final</button>
+    </p>
+  </section>
+
+  <section class="pantalla pantalla-zona" id="zona-sensores" hidden>
+    <p class="etiqueta">ZONA 01</p>
+    <h2>Sistema de percepción: los sensores</h2>
+    <p>Revisá cómo R-07 siente el ambiente y resolvé los chequeos de esta zona.</p>
+    <button type="button" class="boton-secundario volver-mapa">Volver al mapa</button>
+
+      <section class="teoria" id="teoria-sensores">
+        <h3><button type="button" class="teoria-cabecera" aria-expanded="true" aria-controls="teoria-cuerpo-sensores">Expediente técnico: sistema de percepción</button></h3>
+        <div class="teoria-cuerpo" id="teoria-cuerpo-sensores">
+          <p>Un sensor es una pieza que capta información. El sensor mide algo del ambiente. Por ejemplo: la luz, la distancia o el color.</p>
+          <ul class="ejemplos">
+            <li class="ejemplo"><strong>Sensor de distancia.</strong> Mide qué tan cerca está un objeto.</li>
+            <li class="ejemplo"><strong>Sensor de luz.</strong> Mide si hay luz o sombra.</li>
+            <li class="ejemplo"><strong>Sensor de color.</strong> Reconoce colores como negro o blanco.</li>
+          </ul>
+          <figure>
+            <img src="imagenes/sensor-ultrasonico.jpg" alt="Sensor ultrasónico del Laboratorio de Robótica" width="400">
+            <figcaption>Sensor ultrasónico usado en el Laboratorio</figcaption>
+          </figure>
+        </div>
+      </section>
+    <section class="protocolo" id="protocolo-sensores">
+      <h3 class="titulo-protocolo">Protocolo de diagnóstico</h3>
+      <article class="chequeo" id="chequeo-1">
+        <h3>Chequeo 1 · Identificación</h3>
+        <form id="formulario-1" novalidate>
+          <fieldset>
+            <legend>¿Cuál de estas piezas es un sensor?</legend>
+          <ul class="opciones">
+            <li><label for="c1-motor"><input type="radio" id="c1-motor" name="c1" value="motor"> Motor</label></li>
+            <li><label for="c1-sensor"><input type="radio" id="c1-sensor" name="c1" value="sensor"> Sensor de distancia</label></li>
+            <li><label for="c1-led"><input type="radio" id="c1-led" name="c1" value="led"> Led</label></li>
+            <li><label for="c1-parlante"><input type="radio" id="c1-parlante" name="c1" value="parlante"> Parlante</label></li>
+          </ul>
+          </fieldset>
+          <div class="fila-botones">
+            <button type="submit" class="boton-chequeo">Ejecutar chequeo</button>
+            <button type="button" class="boton-pista">Pedir pista (-3 puntos)</button>
+          </div>
+        </form>
+        <p class="resultado" id="resultado-1" aria-live="polite"></p>
+      </article>
+      <article class="chequeo" id="chequeo-2">
+        <h3>Chequeo 2 · Verdadero o falso</h3>
+        <form id="formulario-2" novalidate>
+          <fieldset>
+            <legend>Un sensor de luz sirve para saber si hay luz o sombra.</legend>
+          <ul class="opciones">
+            <li><label for="c2-verdadero"><input type="radio" id="c2-verdadero" name="c2" value="verdadero"> Verdadero</label></li>
+            <li><label for="c2-falso"><input type="radio" id="c2-falso" name="c2" value="falso"> Falso</label></li>
+          </ul>
+          </fieldset>
+          <div class="fila-botones">
+            <button type="submit" class="boton-chequeo">Ejecutar chequeo</button>
+            <button type="button" class="boton-pista">Pedir pista (-3 puntos)</button>
+          </div>
+        </form>
+        <p class="resultado" id="resultado-2" aria-live="polite"></p>
+      </article>
+      <article class="chequeo" id="chequeo-3">
+        <h3>Chequeo 3 · Inventario de sensores</h3>
+        <form id="formulario-3" novalidate>
+          <fieldset>
+            <legend>Marcá todas las piezas que son sensores</legend>
+          <ul class="opciones">
+            <li><label for="c3-distancia"><input type="checkbox" id="c3-distancia" name="c3" value="distancia"> Sensor de distancia</label></li>
+            <li><label for="c3-motor"><input type="checkbox" id="c3-motor" name="c3" value="motor"> Motor</label></li>
+            <li><label for="c3-color"><input type="checkbox" id="c3-color" name="c3" value="color"> Sensor de color</label></li>
+            <li><label for="c3-parlante"><input type="checkbox" id="c3-parlante" name="c3" value="parlante"> Parlante</label></li>
+            <li><label for="c3-luz"><input type="checkbox" id="c3-luz" name="c3" value="luz"> Sensor de luz</label></li>
+          </ul>
+          </fieldset>
+          <div class="fila-botones">
+            <button type="submit" class="boton-chequeo">Ejecutar chequeo</button>
+            <button type="button" class="boton-pista">Pedir pista (-3 puntos)</button>
+          </div>
+        </form>
+        <p class="resultado" id="resultado-3" aria-live="polite"></p>
+      </article>
+    </section>
+    <div class="zona-lista" id="zona-lista-sensores" hidden>
+      <p>Zona revisada. Se habilitó el siguiente sector de R-07.</p>
+      <button type="button" class="boton-siguiente" data-zona-siguiente="actuadores">Ir a la siguiente zona: Sistema de acción</button>
+    </div>
+  </section>
+
+  <section class="pantalla pantalla-zona" id="zona-actuadores" hidden>
+    <p class="etiqueta">ZONA 02</p>
+    <h2>Sistema de acción: los actuadores</h2>
+    <p>Revisá cómo R-07 se mueve y actúa y resolvé los chequeos de esta zona.</p>
+    <button type="button" class="boton-secundario volver-mapa">Volver al mapa</button>
+
+      <section class="teoria" id="teoria-actuadores">
+        <h3><button type="button" class="teoria-cabecera" aria-expanded="true" aria-controls="teoria-cuerpo-actuadores">Expediente técnico: sistema de acción</button></h3>
+        <div class="teoria-cuerpo" id="teoria-cuerpo-actuadores">
+          <p>Un actuador es una pieza que produce un movimiento o una acción. El actuador recibe una orden. El actuador cumple esa orden.</p>
+          <ul class="ejemplos">
+            <li class="ejemplo"><strong>Motor.</strong> Hace que el robot se mueva.</li>
+            <li class="ejemplo"><strong>Led.</strong> Enciende una luz.</li>
+            <li class="ejemplo"><strong>Parlante.</strong> Emite un sonido.</li>
+          </ul>
+          <figure>
+            <img src="imagenes/motor-dc.jpg" alt="Motor DC o servomotor" width="400">
+            <figcaption>Motor DC / servomotor usado en el Laboratorio</figcaption>
+          </figure>
+        </div>
+      </section>
+    <section class="protocolo" id="protocolo-actuadores">
+      <h3 class="titulo-protocolo">Protocolo de diagnóstico</h3>
+      <article class="chequeo" id="chequeo-4">
+        <h3>Chequeo 4 · Pieza que mueve</h3>
+        <form id="formulario-4" novalidate>
+          <fieldset>
+            <legend>Elegí la palabra que completa la frase</legend>
+          <p><label for="c4-respuesta">El <select id="c4-respuesta" name="c4-respuesta"><option value="">elegí una opción</option><option value="motor">motor</option><option value="sensor-color">sensor de color</option><option value="controlador">controlador</option></select> hace que el robot se mueva.</label></p>
+          </fieldset>
+          <div class="fila-botones">
+            <button type="submit" class="boton-chequeo">Ejecutar chequeo</button>
+            <button type="button" class="boton-pista">Pedir pista (-3 puntos)</button>
+          </div>
+        </form>
+        <p class="resultado" id="resultado-4" aria-live="polite"></p>
+      </article>
+      <article class="chequeo" id="chequeo-5">
+        <h3>Chequeo 5 · Pieza que ilumina</h3>
+        <form id="formulario-5" novalidate>
+          <fieldset>
+            <legend>Completá la frase con la palabra correcta</legend>
+          <p><label for="c5-respuesta">El <input type="text" id="c5-respuesta" name="c5-respuesta" placeholder="escribí acá" autocomplete="off"> enciende una luz.</label></p>
+          </fieldset>
+          <div class="fila-botones">
+            <button type="submit" class="boton-chequeo">Ejecutar chequeo</button>
+            <button type="button" class="boton-pista">Pedir pista (-3 puntos)</button>
+          </div>
+        </form>
+        <p class="resultado" id="resultado-5" aria-live="polite"></p>
+      </article>
+    </section>
+    <div class="zona-lista" id="zona-lista-actuadores" hidden>
+      <p>Zona revisada. Se habilitó el siguiente sector de R-07.</p>
+      <button type="button" class="boton-siguiente" data-zona-siguiente="controlador">Ir a la siguiente zona: Sistema de decisión</button>
+    </div>
+  </section>
+
+  <section class="pantalla pantalla-zona" id="zona-controlador" hidden>
+    <p class="etiqueta">ZONA 03</p>
+    <h2>Sistema de decisión: el controlador</h2>
+    <p>Revisá cómo R-07 decide qué hacer y resolvé los chequeos de esta zona.</p>
+    <button type="button" class="boton-secundario volver-mapa">Volver al mapa</button>
+
+      <section class="teoria" id="teoria-controlador">
+        <h3><button type="button" class="teoria-cabecera" aria-expanded="true" aria-controls="teoria-cuerpo-controlador">Expediente técnico: sistema de decisión</button></h3>
+        <div class="teoria-cuerpo" id="teoria-cuerpo-controlador">
+          <p>El controlador es el cerebro del robot. Recibe la información de los sensores, decide qué hacer y manda la orden a los actuadores.</p>
+          <p>El controlador tiene un programa. El programa dice, paso a paso, qué debe hacer el robot en cada situación.</p>
+          <figure>
+            <img src="imagenes/icono-controlador.jpg" alt="Ícono de controlador" width="160">
+            <figcaption>El controlador, el cerebro de R-07</figcaption>
+          </figure>
+        </div>
+      </section>
+    <section class="protocolo" id="protocolo-controlador">
+      <h3 class="titulo-protocolo">Protocolo de diagnóstico</h3>
+      <article class="chequeo" id="chequeo-6">
+        <h3>Chequeo 6 · Núcleo de decisión</h3>
+        <form id="formulario-6" novalidate>
+          <fieldset>
+            <legend>Completá la frase con la palabra correcta</legend>
+          <p><label for="c6-respuesta">El <input type="text" id="c6-respuesta" name="c6-respuesta" placeholder="escribí acá" autocomplete="off"> es el cerebro del robot. Recibe información de los sensores y decide qué hacer.</label></p>
+          </fieldset>
+          <div class="fila-botones">
+            <button type="submit" class="boton-chequeo">Ejecutar chequeo</button>
+            <button type="button" class="boton-pista">Pedir pista (-3 puntos)</button>
+          </div>
+        </form>
+        <p class="resultado" id="resultado-6" aria-live="polite"></p>
+      </article>
+      <article class="chequeo" id="chequeo-7">
+        <h3>Chequeo 7 · La decisión</h3>
+        <form id="formulario-7" novalidate>
+          <fieldset>
+            <legend>Un sensor de distancia detecta un obstáculo. ¿Qué hace el controlador?</legend>
+          <ul class="opciones">
+            <li><label for="c7-decide"><input type="radio" id="c7-decide" name="c7" value="decide"> Decide frenar y manda la orden al motor</label></li>
+            <li><label for="c7-mide"><input type="radio" id="c7-mide" name="c7" value="mide"> Mide la distancia al obstáculo</label></li>
+            <li><label for="c7-frena"><input type="radio" id="c7-frena" name="c7" value="frena"> Frena el robot sin recibir órdenes</label></li>
+            <li><label for="c7-luz"><input type="radio" id="c7-luz" name="c7" value="luz"> Enciende un led para avisar</label></li>
+          </ul>
+          </fieldset>
+          <div class="fila-botones">
+            <button type="submit" class="boton-chequeo">Ejecutar chequeo</button>
+            <button type="button" class="boton-pista">Pedir pista (-3 puntos)</button>
+          </div>
+        </form>
+        <p class="resultado" id="resultado-7" aria-live="polite"></p>
+      </article>
+    </section>
+    <div class="zona-lista" id="zona-lista-controlador" hidden>
+      <p>Zona revisada. Se habilitó el siguiente sector de R-07.</p>
+      <button type="button" class="boton-siguiente" data-zona-siguiente="desafio">Ir a la siguiente zona: Núcleo de R-07</button>
+    </div>
+  </section>
+
+  <section class="pantalla pantalla-zona" id="zona-desafio" hidden>
+    <p class="etiqueta">ZONA 04</p>
+    <h2>Núcleo de R-07: desafío final</h2>
+    <p>Último sector. Reconstruí cómo trabajan juntos los tres sistemas y devolvele la vida a R-07.</p>
+    <button type="button" class="boton-secundario volver-mapa">Volver al mapa</button>
+
+      <section class="teoria" id="teoria-desafio">
+        <h3><button type="button" class="teoria-cabecera" aria-expanded="true" aria-controls="teoria-cuerpo-desafio">Expediente técnico: los tres trabajan juntos</button></h3>
+        <div class="teoria-cuerpo" id="teoria-cuerpo-desafio">
+          <ol class="secuencia">
+            <li>El sensor capta información.</li>
+            <li>El controlador recibe esa información y decide.</li>
+            <li>El actuador ejecuta la acción.</li>
+          </ol>
+          <p>Ejemplo: un sensor de distancia detecta un obstáculo. El controlador decide frenar. El motor (actuador) frena el robot.</p>
+          <figure>
+            <video controls width="480">
+              <source src="videos/robot-esquivando-obstaculos.mp4" type="video/mp4">
+              Tu navegador no soporta el elemento de video.
+            </video>
+            <figcaption>Video: robot esquivando un obstáculo</figcaption>
+          </figure>
+        </div>
+      </section>
+    <section class="protocolo" id="protocolo-desafio">
+      <h3 class="titulo-protocolo">Protocolo de diagnóstico</h3>
+      <article class="chequeo" id="chequeo-8">
+        <h3>Chequeo 8 · Secuencia completa</h3>
+        <form id="formulario-8" novalidate>
+          <fieldset>
+            <legend>Completá cómo trabajan juntos los tres sistemas</legend>
+          <p><label for="c8-a">El <select id="c8-a" name="c8-a"><option value="">elegí una opción</option><option value="sensor">sensor</option><option value="controlador">controlador</option><option value="actuador">actuador</option></select> capta información del ambiente.</label></p>
+          <p><label for="c8-b">El <select id="c8-b" name="c8-b"><option value="">elegí una opción</option><option value="sensor">sensor</option><option value="controlador">controlador</option><option value="actuador">actuador</option></select> recibe esa información y decide.</label></p>
+          <p><label for="c8-c">El <select id="c8-c" name="c8-c"><option value="">elegí una opción</option><option value="sensor">sensor</option><option value="controlador">controlador</option><option value="actuador">actuador</option></select> ejecuta la acción.</label></p>
+          </fieldset>
+          <div class="fila-botones">
+            <button type="submit" class="boton-chequeo">Ejecutar chequeo</button>
+            <button type="button" class="boton-pista">Pedir pista (-3 puntos)</button>
+          </div>
+        </form>
+        <p class="resultado" id="resultado-8" aria-live="polite"></p>
+      </article>
+      <article class="chequeo" id="chequeo-9">
+        <h3>Chequeo 9 · Frenar a R-07</h3>
+        <form id="formulario-9" novalidate>
+          <fieldset>
+            <legend>El controlador ordena frenar. ¿Qué actuador frena al robot?</legend>
+          <p><label for="c9-respuesta">El <input type="text" id="c9-respuesta" name="c9-respuesta" placeholder="escribí acá" autocomplete="off"> frena al robot.</label></p>
+          </fieldset>
+          <div class="fila-botones">
+            <button type="submit" class="boton-chequeo">Ejecutar chequeo</button>
+            <button type="button" class="boton-pista">Pedir pista (-3 puntos)</button>
+          </div>
+        </form>
+        <p class="resultado" id="resultado-9" aria-live="polite"></p>
+      </article>
+    </section>
+    <div class="zona-lista" id="zona-lista-desafio" hidden>
+      <p>Diagnóstico terminado. R-07 volvió a responder.</p>
+      <button type="button" class="boton-siguiente" id="boton-informe-zona">Ver informe final</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>Objeto de Aprendizaje · Diseño Web · Laboratorio de Robótica</p>
+</footer>
+
+<div class="velo" id="informe-final">
+  <div class="modal" id="tarjeta-informe" role="dialog" aria-modal="true" aria-labelledby="titulo-informe">
+    <h2 id="titulo-informe">R-07 operativo</h2>
+    <p id="mensaje-informe">Diagnosticaste los tres sistemas del robot y R-07 volvió a responder.</p>
+    <p id="resumen-informe"></p>
+    <p id="puntaje-final">Puntaje final: 0</p>
+    <p id="mensaje-insignia"></p>
+    <p id="clave-verificacion">CLAVE: NUCLEO-ESTABLE</p>
+    <p>Reportá esta clave a tu docente como evidencia de que completaste el diagnóstico.</p>
+    <div class="fila-botones">
+      <button type="button" id="boton-descargar-pdf">Descargar informe en PDF</button>
+      <button type="button" class="boton-secundario" id="boton-cerrar-informe">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="velo" id="modal-reiniciar">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-reiniciar">
+    <h2 id="titulo-reiniciar">Reiniciar el diagnóstico</h2>
+    <p>Se borran tu nombre, tus puntos y tus chequeos guardados. Después no se puede deshacer.</p>
+    <div class="fila-botones">
+      <button type="button" class="boton-reiniciar" id="boton-confirmar-reinicio">Sí, reiniciar</button>
+      <button type="button" class="boton-secundario" id="boton-cancelar-reinicio">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
